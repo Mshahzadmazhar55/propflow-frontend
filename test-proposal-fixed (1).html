@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropFlow - Test AI Proposal Generator</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+}
+.container { 
+  max-width: 800px; 
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+h1 { 
+  color: #1A6B4A;
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+.subtitle {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+.field {
+  margin-bottom: 20px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 14px;
+}
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #1A6B4A;
+}
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.btn {
+  background: #1A6B4A;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+.btn:hover {
+  background: #155a3d;
+}
+.btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.result {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #1A6B4A;
+  display: none;
+}
+.result.show {
+  display: block;
+}
+.result h2 {
+  color: #1A6B4A;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+.result pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  line-height: 1.6;
+  color: #333;
+}
+.error {
+  background: #fee;
+  border-left-color: #d00;
+}
+.error h2 {
+  color: #d00;
+}
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+.success-badge {
+  display: inline-block;
+  background: #d4edda;
+  color: #155724;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🤖 Test AI Proposal Generator</h1>
+  <p class="subtitle">Testing Claude 4 Haiku - Fill in the fields below to generate an AI-powered proposal</p>
+  
+  <form id="proposalForm">
+    <div class="field">
+      <label>Your Name / Business *</label>
+      <input type="text" id="name" placeholder="Muhammad Shahzad Mazhar" required>
+    </div>
+
+    <div class="field">
+      <label>Profession *</label>
+      <select id="profession" required>
+        <option value="">Select...</option>
+        <option value="Freelance Web Developer">Freelance Web Developer</option>
+        <option value="Freelance Designer">Freelance Designer</option>
+        <option value="Freelance Copywriter">Freelance Copywriter</option>
+        <option value="Freelance Photographer">Freelance Photographer</option>
+        <option value="Freelance Video Editor">Freelance Video Editor</option>
+        <option value="Freelance Social Media Manager">Freelance Social Media Manager</option>
+        <option value="Freelance Consultant">Freelance Consultant</option>
+        <option value="Freelance Marketing Expert">Freelance Marketing Expert</option>
+        <option value="UX/UI Designer">UX/UI Designer</option>
+        <option value="Motion Graphics Designer">Motion Graphics Designer</option>
+        <option value="SEO Specialist">SEO Specialist</option>
+        <option value="Independent Developer">Independent Developer</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Years Experience *</label>
+      <input type="number" id="yearsExperience" placeholder="5" min="0" required>
+    </div>
+
+    <div class="field">
+      <label>Your Email (for footer) *</label>
+      <input type="email" id="email" placeholder="your@email.com" required>
+    </div>
+    
+    <div class="field">
+      <label>Client Name / Company *</label>
+      <input type="text" id="clientName" placeholder="ABC Tech Solutions" required>
+    </div>
+    
+    <div class="field">
+      <label>Project Description *</label>
+      <textarea id="projectDescription" placeholder="Complete website redesign for a technology consulting company..." required></textarea>
+    </div>
+    
+    <div class="field">
+      <label>Budget *</label>
+      <input type="text" id="budget" placeholder="$5,000" required>
+    </div>
+    
+    <div class="field">
+      <label>Timeline *</label>
+      <input type="text" id="timeline" placeholder="4 weeks" required>
+    </div>
+    
+    <div class="field">
+      <label>Key Deliverables (one per line) *</label>
+      <textarea id="deliverables" placeholder="Modern responsive website design&#10;Portfolio showcase section&#10;Contact form integration&#10;Blog with CMS&#10;SEO optimization" required></textarea>
+    </div>
+    
+    <button type="submit" class="btn" id="generateBtn">Generate AI Proposal</button>
+  </form>
+  
+  <div id="result" class="result">
+    <div id="successBadge" class="success-badge" style="display:none;">
+      ✓ AI Proposal Generated Successfully!
+    </div>
+    <h2 id="resultTitle">Generated Proposal:</h2>
+    <pre id="proposalText"></pre>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://my-clean-app-production.up.railway.app/api';
+
+document.getElementById('proposalForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const btn = document.getElementById('generateBtn');
+  const result = document.getElementById('result');
+  const proposalText = document.getElementById('proposalText');
+  const resultTitle = document.getElementById('resultTitle');
+  const successBadge = document.getElementById('successBadge');
+  
+  // Get form data
+  const data = {
+    name: document.getElementById('name').value,
+    profession: document.getElementById('profession').value,
+    yearsExperience: document.getElementById('yearsExperience').value,
+    email: document.getElementById('email').value,
+    clientName: document.getElementById('clientName').value,
+    projectDescription: document.getElementById('projectDescription').value,
+    budget: document.getElementById('budget').value,
+    timeline: document.getElementById('timeline').value,
+    deliverables: document.getElementById('deliverables').value
+  };
+  
+  // Show loading
+  btn.disabled = true;
+  btn.textContent = 'Generating... (this takes 10-15 seconds)';
+  result.className = 'result show';
+  result.classList.remove('error');
+  successBadge.style.display = 'none';
+  resultTitle.textContent = 'Generating Proposal...';
+  proposalText.textContent = 'Claude 4 Haiku is writing your professional proposal... ✨';
+  
+  try {
+    console.log('Sending request to:', `${API_URL}/generate/proposal`);
+    console.log('Request data:', data);
+
+    const response = await fetch(`${API_URL}/generate/proposal`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    
+    console.log('Response status:', response.status);
+    
+    const responseData = await response.json();
+    console.log('Response data:', responseData);
+    
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to generate proposal');
+    }
+    
+    // Show result
+    const proposal = responseData.proposal || responseData.content || 'Proposal generated!';
+    
+    successBadge.style.display = 'inline-block';
+    resultTitle.textContent = 'Your AI-Generated Proposal:';
+    proposalText.textContent = proposal;
+    
+  } catch (error) {
+    console.error('Error:', error);
+    result.classList.add('error');
+    resultTitle.textContent = 'Error';
+    proposalText.textContent = `Error: ${error.message}
+
+Possible reasons:
+- Backend is still restarting (wait 1 minute and try again)
+- Anthropic API key issue
+- Network connection issue
+
+Check Railway logs for more details.`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate AI Proposal';
+  }
+});
+</script>
+
+</body>
+</html>
